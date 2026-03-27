@@ -10,7 +10,7 @@ def haValorNulo(df):
     return
     
 
-df = pd.read_json('train_augmented.json')
+df = pd.read_json('train.json')
 haValorNulo(df)
 
 
@@ -22,7 +22,6 @@ print(f"Há um total de {total_reviews} reviews")
 # Cada annotation é composto por category, aspect, sentiment, polarity
 
 # Como está balanceado quanto a polaridade?
-
 df_transposto = df.T 
 
 # 2. "Explodir" a coluna annotations (cada item da lista vira uma linha)
