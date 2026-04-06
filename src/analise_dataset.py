@@ -15,16 +15,26 @@ def verificar_nulos(df):
     return tem_nulo
 
 def processar_anotacoes(df):
-    """
-    Transpõe o DF, explode as anotações e normaliza os dicionários 
-    em colunas (category, aspect, sentiment, polarity).
-    """
-    df_transposto = df.T
-    # Explodir a lista de anotações para que cada uma ganhe sua própria linha
+    # Transpõe o dataframe
+    df_transposto = df.T 
+    
+    # Cada anotação vira linha
     df_exploded = df_transposto.explode('annotations')
-    # Normalizar os dicionários dentro da coluna annotations
-    df_annot = pd.json_normalize(df_exploded['annotations'])
-    return df_annot
+    
+    # Reseta o índice para não perder o ID do review e facilitar a concatenação 
+    df_exploded = df_exploded.reset_index().rename(columns={'index': 'review_id'})
+    
+    # Normaliza as anotações
+    df_annot_cols = pd.json_normalize(df_exploded['annotations'])
+    
+    # Concatena o texto original com as colunas normalizadas
+    # Agora o df_annot terá: review_id, text, category, aspect, sentiment, polarity
+    df_final = pd.concat([
+        df_exploded[['review_id', 'text']].reset_index(drop=True),
+        df_annot_cols.reset_index(drop=True)
+    ], axis=1)
+    
+    return df_final
 
 def analisar_polaridade(df_annot):
     """Exibe o balanceamento de polaridade em valores e porcentagem."""
