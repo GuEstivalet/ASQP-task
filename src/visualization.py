@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import os
 
+OUT_DIR = "/plots"
+
+# Gráfico de frequência de categoria; escala: normal ou log
 def salvar_grafico_barras(dados, titulo, nome_arquivo, xlabel="Categoria", ylabel="Frequência", log_scale=False):
     """
     Gera e salva um gráfico de barras a partir de um dicionário ou objeto similar.

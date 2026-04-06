@@ -46,19 +46,6 @@ SEARCH_SPACES = {
     }
 }
 
-# 3. Parâmetros para Curva de Validação/Monitoramento
-VAL_CURVE_PARAMS = {
-    'mt5_small': {
-        'label_smoothing_factor': [0.0, 0.1, 0.15, 0.2],
-        'max_steps': [500, 1000, 2000, 5000], # Avaliar convergência
-        'adafactor': [True, False], 
-    },
-    'mt5_base': {
-        'label_smoothing_factor': [0.0, 0.1],
-        'learning_rate': [5e-6, 1e-5, 5e-5, 1e-4],
-        'weight_decay': [0.001, 0.01, 0.1, 1.0]
-    }
-}
 
 # 4. Configurações do Trainer (Hugging Face)
 def get_training_args(output_dir, model_key, params=None):

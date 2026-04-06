@@ -1,77 +1,35 @@
 import os
 import sys
-from src.preprocessing.load_and_clean import load_and_clean_dataset
-from src.data_analysis.analise_dataset import first_analysis
-
+from src.analise_dataset import carregar_dados,verificar_nulos,processar_anotacoes,analisar_polaridade,analisar_categorias
+from src.data_augmentation import gerar_datasets_experimentais
 def main():
     
-    # 1. Loading and Cleaning dataset
-    try:
-        df_raw = load_and_clean_dataset()
-    except Exception as e:
-            print(f"Critical Error loading data: {e}")
+    # 1. Setup inicial
+    caminho = 'train.json'
+    df_raw = carregar_dados(caminho)
     
-    # 2. Visualize and Interpret raw data
+    # 2. Verificação de integridade
+    verificar_nulos(df_raw)
     
-    first_analysis(df_raw)
+    # 3. Processamento e Limpeza
+    df_annot = processar_anotacoes(df_raw)
     
-    # 3. Generate different combinations of dataset (raw, BT, SR, BT+SR, SR+BT)
-    # where BT is back translation and SR is Synonym Replacement
+    # 4. Análises Estatísticas
+    analisar_polaridade(df_annot)
+    analisar_categorias(df_annot)
     
-
-            
-
-                # B. Balance Data
-                df_balanced = balance_group_data(df_block)
-                
-                # C. Split Train/Test and Sample for Tuning
-                X_train, X_test, y_train, y_test, X_train_samp, y_train_samp = split_and_sample(df_balanced)
-                
-                # C.0 Impute missing values if any
-                X_train, X_test, X_train_samp = impute_data(X_train, X_test, X_train_samp)     
-                               
-                # C.1 Normalize Data if configured
-                if ExperimentConfig.NORMALIZE_DATA:
-                    X_train, X_test, X_train_samp = normalize_data(X_train, X_test, X_train_samp)
-                
-                # D. (Optional) Validation / Learning Curves
-                if ExperimentConfig.RUN_VALIDATION_CURVES or ExperimentConfig.RUN_LEARNING_CURVES:
-                    subdir = f"{grouping_name}_{model_strategie_id}_{group_id_clean}"
-                    if ExperimentConfig.RUN_VALIDATION_CURVES:
-                        generate_validation_curves(X_train_samp, y_train_samp, subdir, model_type=current_model_type)
-                    if ExperimentConfig.RUN_LEARNING_CURVES:
-                        generate_learning_curve(X_train_samp, y_train_samp, subdir, model_type=current_model_type, train_sizes=ExperimentConfig.LEARNING_CURVE_TRAIN_SIZES)
-                    continue
-
-                # E. Feature Selection (RFE) using dynamic model type
-                log_message(f"--- Feature Selection (RFE) ---", level="stage")
-                selected_cols = run_rfe(X_train_samp, y_train_samp, current_model_type)
-                
-                # F. Hyperparameter Tuning (Random Search)
-                log_message(f"--- Hyperparameter Tuning ---", level="stage")
-                best_params = tune_hyperparameters(X_train_samp[selected_cols], y_train_samp, current_model_type)
-                
-                # G. Final Training (Full Train set, Selected Features)
-                log_message(f"--- Final Training ---", level="stage")
-                final_model = train_final_model(X_train[selected_cols], y_train, current_model_type, best_params)
-                
-                # H. Evaluation (delegated to src.evaluation.evaluate_and_save)
-                try:
-                    evaluate_and_save(
-                        final_model=final_model,
-                        X_test=X_test,
-                        y_test=y_test,
-                        X_train=X_train,
-                        y_train=y_train,
-                        selected_cols=selected_cols,
-                        grouping_name=grouping_name,
-                        model_strategie_id=model_strategie_id,
-                        block_group=block_group,
-                        current_model_type=current_model_type,
-                        best_params=best_params,
-                        export_model_callback=export_model_to_cpp,
-                    )
-                except Exception as e:
-                    log_message(f"Error during evaluation step: {e}", level="ERROR")
+    
+    # 5. Geração de Datasets Experimentais
+    # Esta função retorna um dicionário com todos os DataFrames
+    meus_datasets = gerar_datasets_experimentais(df_annot)
+    
+    # Exemplo de como acessar um dataset específico:
+    # df_para_treino = meus_datasets['bt_sr']
+    
+    # 6. Salvar os datasets (opcional, mas recomendado para não reprocessar)
+    for nome, df_exp in meus_datasets.items():
+        df_exp.to_csv(f'dataset_{nome}.csv', index=False)
+        
+    print("\nTodos os datasets experimentais foram salvos e estão prontos para o treinamento.")
 if __name__ == "__main__":
     main()
