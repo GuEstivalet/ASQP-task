@@ -10,7 +10,7 @@ BASE_MODELS = {
         'default_args': {
             'max_source_length': 512,
             'max_target_length': 128,
-            'num_beams': 4, # Para inferência/ASQP
+            'num_beams': 4, 
             'repetition_penalty': 2.5
         }
     },
@@ -61,15 +61,15 @@ VAL_CURVE_PARAMS = {
 }
 
 # 4. Configurações do Trainer (Hugging Face)
-# Isso une as configs do seu ExperimentConfig com as necessidades do mT5
 def get_training_args(output_dir, model_key, params=None):
+
     base_params = {
         'output_dir': output_dir,
         'evaluation_strategy': "epoch",
         'save_strategy': "epoch",
         'load_best_model_at_end': True,
-        'metric_for_best_model': "eval_loss", # Ou "f1" se tiver o script de extração de quadruplas
-        'seed': ExperimentConfig.RANDOM_STATE,
+        'metric_for_best_model': "eval_loss", # Ou "f1"
+        'seed': ExpParamsCfg.RANDOM_STATE,
         'push_to_hub': False,
     }
     
