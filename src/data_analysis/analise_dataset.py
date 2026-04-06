@@ -74,3 +74,6 @@ print(porcentagem_categorias)
 
 # Mostra quantas anotações há por combinação de Categoria e Polaridade
 print(df_annotations.groupby(['category', 'polarity']).size().unstack(fill_value=0))
+
+def first_analysis(df):
+    print("first analysis")
